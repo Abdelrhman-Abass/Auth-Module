@@ -25,6 +25,7 @@ app.use(
       "http://localhost:3000",
       "http://localhost:5173",
       "https://auth-module-silk.vercel.app",
+      "https://auth-module-3nbt.vercel.app",
       "https://your-production-frontend.com", // Change later
     ],
     credentials: true,
