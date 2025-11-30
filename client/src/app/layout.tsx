@@ -27,7 +27,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_FRONTEND_DOMAIN || "https://vercel.app";
+  const rawBaseUrl = process.env.NEXT_PUBLIC_BASE_FRONTEND_DOMAIN || "https://auth-module-3nbt.vercel.app";
   const normalizedBase = rawBaseUrl.startsWith("http") ? rawBaseUrl : `https://${rawBaseUrl.replace(/\/+$/, '')}`;
   const baseUrl = normalizedBase.replace(/\/+$/, '');
   const canonicalUrl = `${baseUrl}`;
