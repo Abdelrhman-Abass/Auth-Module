@@ -1,6 +1,6 @@
-const { readFileSync } = require("fs");
-const { resolve } = require("path");
-const YAML = require("yaml");
+import { readFileSync } from "fs";
+import { resolve } from "path";
+import YAML from "yaml";
 
 const auth = YAML.parse(readFileSync(resolve("./docs/auth.yaml"), "utf8"));
 
@@ -34,4 +34,4 @@ const swaggerDocs = {
 };
 
 
-module.exports = swaggerDocs;
+export default swaggerDocs;
