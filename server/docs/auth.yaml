@@ -1,0 +1,298 @@
+openapi: 3.0.0
+info:
+  title: Universal Authentication Module
+  version: 1.0.0
+  description: |
+    Reusable, plug-and-play authentication module with:
+    • Email + Google login (auto-register)
+    • Short-lived access token + long-lived refresh token (DB + httpOnly cookie)
+    • Refresh token rotation
+    • Protected /me route
+    • Swagger UI
+
+servers:
+  - url: http://localhost:5000/api/auth
+    description: Local development
+
+tags:
+  - name: Authentication
+    description: Authentication endpoints
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    UnauthorizedError:
+      description: Access token missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    ValidationErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                errors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      field:
+                        type: string
+                      message:
+                        type: string
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          type: object
+
+paths:
+  /api/auth/register:
+    post:
+      summary: Register with email
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  example: Sarah Ahmed
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                          user:
+                            $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Validation error or email already exists
+        '409':
+          description: Email already exists
+
+  /api/auth/login:
+    post:
+      summary: Login with email & password
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                          user:
+                            $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Validation error
+        '401':
+          description: Invalid credentials
+
+  /api/auth/google:
+    post:
+      summary: Google Login (idToken)
+      description: Authenticate with Google idToken from frontend. First-time users are auto-registered.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [idToken]
+              properties:
+                idToken:
+                  type: string
+      responses:
+        '200':
+          description: Google login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                          user:
+                            $ref: '#/components/schemas/UserResponse'
+        
+        '302':
+          description: Redirects to frontend with token
+        '400':
+          description: Authentication failed
+
+  /api/auth/refresh:
+    post:
+      summary: Refresh access token
+      description: |
+        Uses the httpOnly refresh_token cookie. 
+        Returns a new access token and rotates the refresh token.
+      tags: [Authentication]
+      security: []   # No Authorization header needed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        '200':
+          description: New access token issued
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+        
+        '400':
+          description: Refresh token missing
+        '401':
+          description: Invalid refresh token
+
+  /api/auth/logout:
+    post:
+      summary: Logout user
+      description: Invalidates refresh token and clears httpOnly cookie
+      tags: [Authentication]
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        
+        '401':
+          description: Unauthorized
+
+  /api/auth/get-profile:
+    get:
+      summary: Get current user
+      description: Returns authenticated user's profile
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+
+security:
+  - bearerAuth: []

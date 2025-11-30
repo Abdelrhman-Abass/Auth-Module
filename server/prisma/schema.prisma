@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider   = "postgresql"
+  relationMode = "prisma"
+  url          = env("DATABASE_URL") // REQUIRED UNTIL PRISMA 7 FIXES THE BUG
+  directUrl    = env("DIRECT_URL") // REQUIRED UNTIL PRISMA 7 FIXES THE BUG
+}
+
+
+model User {
+  id            String         @id @default(uuid())
+  name          String?
+  email         String         @unique
+  passwordHash  String?
+  googleId      String?        @unique
+  avatar        String?
+  createdAt     DateTime       @default(now())
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
