@@ -40,23 +40,18 @@ const cookieStorage = {
     }
   },
   setItem: (name: string, value: string): void => {
-    try {
-      setCookie(name, value, {
-        maxAge: name === 'userData' ? 3600 : 7 * 24 * 60 * 60, // 1 hour for access token, 7 days for others
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-      });
-    } catch (error) {
-      console.error('Error setting cookie:', error);
-    }
+
+    setCookie(name, value, {
+      maxAge: name === 'userData' ? 3600 : 7 * 24 * 60 * 60, // 1 hour for access token, 7 days for others
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
+
   },
   removeItem: (name: string): void => {
-    try {
-      deleteCookie(name);
-    } catch (error) {
-      console.error('Error removing cookie:', error);
-    }
+    deleteCookie(name);
+
   },
 };
 
@@ -130,8 +125,8 @@ export const useAuthStore = create<AuthStore>()(
         deleteCookie('isAuthenticated');
         try {
           localStorage.removeItem('auth-storage');
-        } catch (error) {
-          console.error('Error clearing localStorage:', error);
+        } catch {
+          return null
         }
       },
 

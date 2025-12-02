@@ -5,16 +5,15 @@ import { HTTP_STATUS } from "../utils/constants";
 export const authLimiter: RateLimitRequestHandler = rateLimit({
   windowMs: 60 * 60 * 1000, // 60 minutes
   max: 20, // Max 20 auth attempts per IP 
-  standardHeaders: true, 
-  legacyHeaders: false, 
+  standardHeaders: true,
+  legacyHeaders: false,
   message: {
     success: false,
     message: "Too many authentication attempts. Please try again later.",
     retryAfter: "15 minutes",
   },
- 
-  handler: (req, res) => {
-    console.warn(`Rate limit exceeded for IP: ${req.ip} on ${req.originalUrl}`);
+
+  handler: (_req, res) => {
     res.status(HTTP_STATUS.TOO_MANY_REQUESTS).json({
       success: false,
       message: "Too many authentication attempts. Please try again later.",
@@ -37,8 +36,7 @@ export const generalLimiter: RateLimitRequestHandler = rateLimit({
     success: false,
     message: "Too many requests. Please slow down.",
   },
-  handler: (req, res) => {
-    console.warn(`General rate limit exceeded for IP: ${req.ip}`);
+  handler: (_req, res) => {
     res.status(429).json({
       success: false,
       message: "Too many requests. Please slow down.",

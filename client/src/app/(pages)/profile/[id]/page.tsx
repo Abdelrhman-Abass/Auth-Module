@@ -52,8 +52,7 @@ const ProfilePage = () => {
             logout();
             router.push('/auth');
         },
-        onError: (error) => {
-            console.error('Logout failed:', error);
+        onError: () => {
             logout(); // Force logout even on error
             router.push('/auth');
         },

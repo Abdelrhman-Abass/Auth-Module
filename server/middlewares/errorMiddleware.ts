@@ -12,7 +12,6 @@ const errorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
-  console.error("Error:", error);
 
   try {
     // 1. Prisma Database Errors
@@ -95,7 +94,6 @@ const errorHandler = (
     });
   } catch (unexpectedError) {
     // Final safety net - never crash the server
-    console.error("Error in error handler:", unexpectedError);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
