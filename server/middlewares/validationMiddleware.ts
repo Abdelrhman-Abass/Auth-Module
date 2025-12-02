@@ -7,11 +7,11 @@ import { createErrorResponse } from "../utils/helpers";
 export const validate = (schema: ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      const parsed = schema.safeParse(req.body ?? {}); // ← IMPORTANT FIX
+      const parsed = schema.safeParse(req.body ?? {});
 
       if (parsed.success) {
-        req.body = parsed.data; // sanitized output
-        return next(); // REQUIRED for tests to pass
+        req.body = parsed.data;
+        return next();
       }
 
       const formattedErrors = parsed.error.errors.map((err) => ({

@@ -1,15 +1,16 @@
 import jwt, { type SignOptions } from "jsonwebtoken";
 import type { Response } from "express";
 import { config } from "../config/config";
-import { prisma } from "../prisma/client";
 import { COOKIE_CONFIG } from "./constants";
+import { storeRefreshToken, deleteRefreshToken } from "../services/token.service";
 
 /**
  * Generate short-lived access token (60m by default)
  */
 export const generateAccessToken = (userId: string): string => {
   return jwt.sign(
-    {id : userId  }, config.JWT_ACCESS_SECRET,
+    { id: userId },
+    config.JWT_ACCESS_SECRET,
     {
       expiresIn: config.ACCESS_TOKEN_EXPIRES_IN,
     } as SignOptions
@@ -21,7 +22,8 @@ export const generateAccessToken = (userId: string): string => {
  */
 export const generateRefreshToken = (userId: string): string => {
   return jwt.sign(
-    { id : userId },config.JWT_REFRESH_SECRET,
+    { id: userId },
+    config.JWT_REFRESH_SECRET,
     {
       expiresIn: config.REFRESH_TOKEN_EXPIRES_IN,
     } as SignOptions
@@ -33,8 +35,8 @@ export const generateRefreshToken = (userId: string): string => {
  */
 export const verifyAccessToken = (token: string) => {
   const decoded = jwt.verify(token, config.JWT_ACCESS_SECRET) as jwt.JwtPayload;
-  
-  if (!decoded ) {
+
+  if (!decoded) {
     throw new Error("Invalid token");
   }
 
@@ -46,7 +48,7 @@ export const verifyAccessToken = (token: string) => {
  */
 export const verifyRefreshToken = (token: string) => {
   const decoded = jwt.verify(token, config.JWT_REFRESH_SECRET) as jwt.JwtPayload;
-  
+
   if (!decoded || !decoded['id']) {
     throw new Error("Invalid refresh token");
   }
@@ -62,18 +64,12 @@ export const issueTokens = async (res: Response, userId: string, oldToken?: stri
   const accessToken = generateAccessToken(userId);
   const refreshToken = generateRefreshToken(userId);
 
-  // If old token exists 
   if (oldToken) {
-    await prisma.refreshToken.deleteMany({ where: { token: oldToken } });
+    await deleteRefreshToken(oldToken);
   }
 
-  await prisma.refreshToken.create({
-    data: {
-      userId,
-      token: refreshToken,
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-    },
-  });
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+  await storeRefreshToken(userId, refreshToken, expiresAt);
 
   res.cookie(COOKIE_CONFIG.NAME, refreshToken, {
     httpOnly: true,
@@ -83,7 +79,7 @@ export const issueTokens = async (res: Response, userId: string, oldToken?: stri
     maxAge: COOKIE_CONFIG.MAX_AGE,
   });
 
-  return { accessToken ,refreshToken};
+  return { accessToken, refreshToken };
 };
 
 /**

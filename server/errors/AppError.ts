@@ -1,4 +1,3 @@
-// src/errors/AppError.ts
 import { HTTP_STATUS } from "../utils/constants";
 
 export class AppError extends Error {
@@ -16,7 +15,6 @@ export class AppError extends Error {
   }
 }
 
-// Factory functions – now return the class instance correctly
 export const BadRequestError = (message = "Bad Request") =>
   new AppError(message, HTTP_STATUS.BAD_REQUEST);
 
