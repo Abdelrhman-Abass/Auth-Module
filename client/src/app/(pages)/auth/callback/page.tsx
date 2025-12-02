@@ -24,7 +24,6 @@ const AuthCallback: React.FC = () => {
 
     // Handle error from OAuth
     if (error) {
-      console.error('OAuth error:', error);
       router.push(`/auth?error=${encodeURIComponent(error)}`);
       return;
     }
@@ -32,7 +31,6 @@ const AuthCallback: React.FC = () => {
     if (token && userParam && refresh) {
       try {
         const parsedUser = JSON.parse(decodeURIComponent(userParam));
-        console.log('Received user from OAuth:', parsedUser);
 
         // Use the login function from authStore
         login(parsedUser, token, refresh);
@@ -40,12 +38,10 @@ const AuthCallback: React.FC = () => {
         // Redirect to profile
         const redirectPath = `/profile/${parsedUser.id}`;
         router.push(redirectPath);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+      } catch {
         router.push(`/auth?error=Invalid authentication data`);
       }
     } else {
-      console.error('Missing required parameters in callback URL');
       router.push(`/auth?error=Missing authentication data`);
     }
   }, [searchParams, router, login]);

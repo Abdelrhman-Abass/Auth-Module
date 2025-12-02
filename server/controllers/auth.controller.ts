@@ -1,4 +1,3 @@
-// src/controllers/auth.controller.ts
 import passport from "passport";
 import {
   Strategy as GoogleStrategy,
@@ -7,7 +6,6 @@ import {
 } from "passport-google-oauth20";
 import type { Request, Response, NextFunction, Application } from "express";
 
-// import { prisma } from "../prisma/client";
 import {
   clearRefreshTokenCookie,
   generateAccessToken,

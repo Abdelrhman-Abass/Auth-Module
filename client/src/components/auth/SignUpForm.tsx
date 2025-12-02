@@ -45,7 +45,6 @@ const SignUpComponent: React.FC<SignUpComponentProps> = ({ onSwitchToLogin }) =>
         onSuccess: (response) => {
             if (response.success) {
                 form.reset();
-                console.log('Signup successful:', response);
                 const { user, accessToken, refreshToken } = response.data.data;
                 login(user, accessToken, refreshToken);
                 // Redirect or handle success
@@ -55,14 +54,12 @@ const SignUpComponent: React.FC<SignUpComponentProps> = ({ onSwitchToLogin }) =>
             }
         },
         onError: (error: any) => {
-            console.error('Signup error:', error);
             const errorMessage = error?.response?.data?.message || 'An error occurred. Please try again.';
             form.setError('root', { message: errorMessage });
         },
     });
 
     const onSubmit = (data: SignUpFormData) => {
-        console.log('Submitting signup form:', data);
         signUpMutation.mutate(data);
     };
 

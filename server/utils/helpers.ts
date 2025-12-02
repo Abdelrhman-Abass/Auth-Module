@@ -8,7 +8,6 @@ export const hashPassword = async (password: string): Promise<string> => {
     const saltRounds = 12;
     return await bcrypt.hash(password, saltRounds);
   } catch (error) {
-    console.error("Error hashing password:", error);
     throw new Error("Failed to hash password");
   }
 };
@@ -24,7 +23,6 @@ export const comparePassword = async (
   try {
     return await bcrypt.compare(password, hash);
   } catch (error) {
-    console.error("Error comparing password:", error);
     throw new Error("Failed to compare password");
   }
 };
@@ -37,7 +35,6 @@ export const formatUserResponse = (user: any) => {
     const { passwordHash, ...safeUser } = user;
     return safeUser;
   } catch (error) {
-    console.error("Error formatting user response:", error);
     throw new Error("Failed to format user data");
   }
 };

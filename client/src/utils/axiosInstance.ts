@@ -74,8 +74,7 @@ AxiosInstance.interceptors.request.use(
       if (isValidValue(refreshToken)) {
         try {
           token = await getNewAccessToken(refreshToken as string)
-        } catch (error) {
-          console.error("Unable to get token from refresh:", error)
+        } catch {
           redirectToLogin()
           return Promise.reject("Unable to refresh token")
         }
@@ -118,8 +117,7 @@ AxiosInstance.interceptors.response.use(
       const accessToken = await getNewAccessToken(refreshToken as string)
       originalRequest.headers.Authorization = `Bearer ${accessToken}`
       return AxiosInstance(originalRequest)
-    } catch (e) {
-      console.error("Token refresh failed:", e)
+    } catch {
       redirectToLogin()
       return Promise.reject("Token refresh failed")
     }
