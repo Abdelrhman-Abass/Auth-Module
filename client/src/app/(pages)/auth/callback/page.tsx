@@ -52,7 +52,7 @@ const AuthCallback: React.FC = () => {
 
   return (
     <motion.div
-      className="h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100"
+      className="h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100"
       variants={containerVariants}
       initial="hidden"
       animate="visible"

@@ -18,9 +18,7 @@ export function proxy(req: NextRequest) {
 
     // If user is NOT logged in and trying to access a private path
     if (isPrivatePath && !isUserLoggedIn) {
-        console.log(
-            `Unauthenticated user attempted to access private path ${pathname}, redirecting to login`
-        );
+
         return NextResponse.redirect(new URL("/auth", req.url));
     }
 

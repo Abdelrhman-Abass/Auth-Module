@@ -71,11 +71,6 @@ const SignUpComponent: React.FC<SignUpComponentProps> = ({ onSwitchToLogin }) =>
 
     };
 
-    const isFieldValid = (fieldName: keyof SignUpFormData): boolean => {
-        const fieldState = form.getFieldState(fieldName, form.formState);
-        const fieldValue = form.watch(fieldName);
-        return Boolean(!fieldState.error && fieldState.isDirty && fieldValue?.length > 0);
-    };
 
     const getInputClassName = (hasError: boolean, isValid: boolean) => {
         if (hasError) return 'border-red-300 focus:border-red-500 focus:ring-red-500';
@@ -92,10 +87,10 @@ const SignUpComponent: React.FC<SignUpComponentProps> = ({ onSwitchToLogin }) =>
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
             >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#2B4E42] to-[#15326C] rounded-2xl mb-4 shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-[#2B4E42] to-[#15326C] rounded-2xl mb-4 shadow-lg">
                     <Sparkles className="w-8 h-8 text-white" />
                 </div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#2B4E42] to-[#15326C] bg-clip-text text-transparent mb-2">
+                <h1 className="text-3xl font-bold bg-linear-to-r from-[#2B4E42] to-[#15326C] bg-clip-text text-transparent mb-2">
                     Create Account
                 </h1>
                 <p className="text-gray-600">Sign up to get started</p>
@@ -110,7 +105,7 @@ const SignUpComponent: React.FC<SignUpComponentProps> = ({ onSwitchToLogin }) =>
                         exit={{ opacity: 0, height: 0 }}
                         className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3"
                     >
-                        <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                        <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                         <p className="text-red-700 text-sm">{form.formState.errors.root.message}</p>
                     </motion.div>
                 )}
@@ -120,159 +115,183 @@ const SignUpComponent: React.FC<SignUpComponentProps> = ({ onSwitchToLogin }) =>
             <Form {...form}>
                 <div className="space-y-4">
                     {/* Grid container for fields */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
                         {/* Name Field */}
                         <FormField
                             control={form.control}
                             name="name"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="text-gray-700 font-semibold text-sm">Full Name</FormLabel>
-                                    <FormControl>
-                                        <div className="relative">
-                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                            <Input
-                                                type="text"
-                                                placeholder="John Doe"
-                                                className={`pl-11 ${isFieldValid('name') ? 'pr-11' : 'pr-4'} h-12 rounded-xl transition-all bg-slate-100 ${getInputClassName(!!fieldState.error, isFieldValid('name'))}`}
-                                                {...field}
-                                            />
-                                            <AnimatePresence>
-                                                {isFieldValid('name') && (
-                                                    <motion.div
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center"
-                                                        initial={{ opacity: 0, scale: 0 }}
-                                                        animate={{ opacity: 1, scale: 1 }}
-                                                        exit={{ opacity: 0, scale: 0 }}
-                                                    >
-                                                        <FaCheck className="w-3 h-3 text-green-600" />
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            render={({ field, fieldState }) => {
+                                const isValid =
+                                    !fieldState.error &&
+                                    fieldState.isTouched &&
+                                    (field.value ?? '').trim().length > 0;
+                                return (
+                                    <FormItem className="relative">
+                                        <FormLabel className="text-gray-700 font-semibold text-sm">Full Name</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <Input
+                                                    type="text"
+                                                    placeholder="John Doe"
+                                                    className={`pl-11 ${isValid ? 'pr-11' : 'pr-4'} h-12 rounded-xl transition-all bg-slate-100 ${getInputClassName(!!fieldState.error, isValid)}`}
+                                                    {...field}
+                                                />
+                                                <AnimatePresence>
+                                                    {isValid && (
+                                                        <motion.div
+                                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center"
+                                                            initial={{ opacity: 0, scale: 0 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            exit={{ opacity: 0, scale: 0 }}
+                                                        >
+                                                            <FaCheck className="w-3 h-3 text-green-600" />
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage className="absolute -bottom-5 left-0 text-xs" />
+                                    </FormItem>
+                                )
+                            }}
                         />
 
                         {/* Email Field */}
                         <FormField
                             control={form.control}
                             name="email"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="text-gray-700 font-semibold text-sm">Email</FormLabel>
-                                    <FormControl>
-                                        <div className="relative">
-                                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                            <Input
-                                                type="email"
-                                                placeholder="you@email.com"
-                                                className={`pl-11 ${isFieldValid('email') ? 'pr-11' : 'pr-4'} bg-slate-100 h-12 rounded-xl transition-all ${getInputClassName(!!fieldState.error, isFieldValid('email'))}`}
-                                                {...field}
-                                            />
-                                            <AnimatePresence>
-                                                {isFieldValid('email') && (
-                                                    <motion.div
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center"
-                                                        initial={{ opacity: 0, scale: 0 }}
-                                                        animate={{ opacity: 1, scale: 1 }}
-                                                        exit={{ opacity: 0, scale: 0 }}
-                                                    >
-                                                        <FaCheck className="w-3 h-3 text-green-600" />
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            render={({ field, fieldState }) => {
+                                const isValid =
+                                    !fieldState.error &&
+                                    fieldState.isTouched &&
+                                    (field.value ?? '').trim().length > 0;
+                                return (
+                                    <FormItem className="relative">
+                                        <FormLabel className="text-gray-700 font-semibold text-sm">Email</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <Input
+                                                    type="email"
+                                                    placeholder="you@email.com"
+                                                    className={`pl-11 ${isValid ? 'pr-11' : 'pr-4'} bg-slate-100 h-12 rounded-xl transition-all ${getInputClassName(!!fieldState.error, isValid)}`}
+                                                    {...field}
+                                                />
+                                                <AnimatePresence>
+                                                    {isValid && (
+                                                        <motion.div
+                                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center"
+                                                            initial={{ opacity: 0, scale: 0 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            exit={{ opacity: 0, scale: 0 }}
+                                                        >
+                                                            <FaCheck className="w-3 h-3 text-green-600" />
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage className="absolute -bottom-5 left-0 text-xs" />
+                                    </FormItem>
+                                )
+                            }}
                         />
 
                         {/* Password Field */}
                         <FormField
                             control={form.control}
                             name="password"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="text-gray-700 font-semibold text-sm">Password</FormLabel>
-                                    <FormControl>
-                                        <div className="relative">
-                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                            <Input
-                                                type={showPassword ? 'text' : 'password'}
-                                                placeholder="Create a password"
-                                                className={`pl-11 pr-20 h-12 rounded-xl transition-all bg-slate-100 ${getInputClassName(!!fieldState.error, isFieldValid('password'))}`}
-                                                {...field}
-                                            />
-                                            <AnimatePresence>
-                                                {isFieldValid('password') && (
-                                                    <motion.div
-                                                        className="absolute right-12 top-1/2 -translate-y-1/2 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center"
-                                                        initial={{ opacity: 0, scale: 0 }}
-                                                        animate={{ opacity: 1, scale: 1 }}
-                                                        exit={{ opacity: 0, scale: 0 }}
-                                                    >
-                                                        <FaCheck className="w-3 h-3 text-green-600" />
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                                            >
-                                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                            </button>
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            render={({ field, fieldState }) => {
+                                const isValid =
+                                    !fieldState.error &&
+                                    fieldState.isTouched &&
+                                    (field.value ?? '').trim().length > 0;
+                                return (
+                                    <FormItem className="relative">
+                                        <FormLabel className="text-gray-700 font-semibold text-sm">Password</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <Input
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    placeholder="Create a password"
+                                                    className={`pl-11 ${isValid ? 'pr-20' : 'pr-11'} h-12 rounded-xl transition-all bg-slate-100 ${getInputClassName(!!fieldState.error, isValid)}`}
+                                                    {...field}
+                                                />
+                                                <AnimatePresence>
+                                                    {isValid && (
+                                                        <motion.div
+                                                            className="absolute right-12 top-1/2 -translate-y-1/2 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center"
+                                                            initial={{ opacity: 0, scale: 0 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            exit={{ opacity: 0, scale: 0 }}
+                                                        >
+                                                            <FaCheck className="w-3 h-3 text-green-600" />
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors z-10"
+                                                >
+                                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                                </button>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage className="absolute -bottom-5 left-0 text-xs" />
+                                    </FormItem>
+                                )
+                            }}
                         />
 
                         {/* Confirm Password Field */}
                         <FormField
                             control={form.control}
                             name="confirmPassword"
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel className="text-gray-700 font-semibold text-sm">Confirm Password</FormLabel>
-                                    <FormControl>
-                                        <div className="relative">
-                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                            <Input
-                                                type={showConfirmPassword ? 'text' : 'password'}
-                                                placeholder="Confirm your password"
-                                                className={`pl-11 pr-20 h-12 rounded-xl transition-all bg-slate-100 ${getInputClassName(!!fieldState.error, isFieldValid('confirmPassword'))}`}
-                                                {...field}
-                                            />
-                                            <AnimatePresence>
-                                                {isFieldValid('confirmPassword') && (
-                                                    <motion.div
-                                                        className="absolute right-12 top-1/2 -translate-y-1/2 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center"
-                                                        initial={{ opacity: 0, scale: 0 }}
-                                                        animate={{ opacity: 1, scale: 1 }}
-                                                        exit={{ opacity: 0, scale: 0 }}
-                                                    >
-                                                        <FaCheck className="w-3 h-3 text-green-600" />
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                                            >
-                                                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                            </button>
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            render={({ field, fieldState }) => {
+                                const isValid =
+                                    !fieldState.error &&
+                                    fieldState.isTouched &&
+                                    (field.value ?? '').trim().length > 0;
+                                return (
+                                    <FormItem className="relative">
+                                        <FormLabel className="text-gray-700 font-semibold text-sm">Confirm Password</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <Input
+                                                    type={showConfirmPassword ? 'text' : 'password'}
+                                                    placeholder="Confirm your password"
+                                                    className={`pl-11 ${isValid ? 'pr-20' : 'pr-11'} h-12 rounded-xl transition-all bg-slate-100 ${getInputClassName(!!fieldState.error, isValid)}`}
+                                                    {...field}
+                                                />
+                                                <AnimatePresence>
+                                                    {isValid && (
+                                                        <motion.div
+                                                            className="absolute right-12 top-1/2 -translate-y-1/2 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center"
+                                                            initial={{ opacity: 0, scale: 0 }}
+                                                            animate={{ opacity: 1, scale: 1 }}
+                                                            exit={{ opacity: 0, scale: 0 }}
+                                                        >
+                                                            <FaCheck className="w-3 h-3 text-green-600" />
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors z-10"
+                                                >
+                                                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                                </button>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage className="absolute -bottom-5 left-0 text-xs" />
+                                    </FormItem>
+                                )
+                            }}
                         />
                     </div>
 
@@ -281,7 +300,7 @@ const SignUpComponent: React.FC<SignUpComponentProps> = ({ onSwitchToLogin }) =>
                         type="button"
                         onClick={form.handleSubmit(onSubmit)}
                         disabled={signUpMutation.isPending}
-                        className="w-full h-12 bg-gradient-to-r from-[#2B4E42] to-[#15326C] hover:from-[#204739] hover:to-[#0d1e45] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl"
+                        className="w-full h-12 mt-5 bg-linear-to-r from-[#2B4E42] to-[#15326C] hover:from-[#204739] hover:to-[#0d1e45] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl"
                     >
                         {signUpMutation.isPending ? (
                             <>

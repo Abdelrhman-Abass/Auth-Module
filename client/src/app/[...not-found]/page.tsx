@@ -8,11 +8,11 @@ import { Button } from '@/components/ui/button';
 
 export default function NotFoundPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 flex items-center justify-center relative overflow-hidden p-4">
+        <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-green-50 flex items-center justify-center relative overflow-hidden p-4">
             {/* Animated Background Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <motion.div
-                    className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-300/30 to-purple-300/30 rounded-full blur-3xl"
+                    className="absolute top-0 right-0 w-96 h-96 bg-linear-to-br from-blue-300/30 to-purple-300/30 rounded-full blur-3xl"
                     animate={{
                         x: [0, 50, 0],
                         y: [0, 30, 0],
@@ -25,7 +25,7 @@ export default function NotFoundPage() {
                     }}
                 />
                 <motion.div
-                    className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-green-300/30 to-blue-300/30 rounded-full blur-3xl"
+                    className="absolute bottom-0 left-0 w-96 h-96 bg-linear-to-tr from-green-300/30 to-blue-300/30 rounded-full blur-3xl"
                     animate={{
                         x: [0, -30, 0],
                         y: [0, -50, 0],
@@ -53,7 +53,7 @@ export default function NotFoundPage() {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
                 >
-                    <h1 className="text-9xl md:text-[12rem] font-bold bg-gradient-to-r from-[#2B4E42] via-[#15326C] to-[#2B4E42] bg-clip-text text-transparent leading-none">
+                    <h1 className="text-9xl md:text-[12rem] font-bold bg-linear-to-r from-[#2B4E42] via-[#15326C] to-[#2B4E42] bg-clip-text text-transparent leading-none">
                         404
                     </h1>
                 </motion.div>
@@ -65,7 +65,7 @@ export default function NotFoundPage() {
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
                 >
-                    <div className="w-20 h-20 bg-gradient-to-br from-[#2B4E42] to-[#15326C] rounded-full flex items-center justify-center shadow-xl">
+                    <div className="w-20 h-20 bg-linear-to-br from-[#2B4E42] to-[#15326C] rounded-full flex items-center justify-center shadow-xl">
                         <Search className="w-10 h-10 text-white" />
                     </div>
                 </motion.div>
@@ -81,7 +81,7 @@ export default function NotFoundPage() {
                         Page Not Found
                     </h2>
                     <p className="text-lg text-gray-600 mb-2">
-                        Oops! The page you're looking for doesn't exist.
+                        Oops! The page you&apos;re looking for doesn&apos;t exist.
                     </p>
                     <p className="text-gray-500">
                         It might have been moved or deleted.
@@ -96,7 +96,7 @@ export default function NotFoundPage() {
                     transition={{ delay: 0.8 }}
                 >
                     <Link href="/">
-                        <Button className="w-full sm:w-auto h-12 px-8 bg-gradient-to-r from-[#2B4E42] to-[#15326C] hover:from-[#204739] hover:to-[#0d1e45] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
+                        <Button className="w-full sm:w-auto h-12 px-8 bg-linear-to-r from-[#2B4E42] to-[#15326C] hover:from-[#204739] hover:to-[#0d1e45] text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
                             <Home className="w-5 h-5" />
                             Go Home
                         </Button>

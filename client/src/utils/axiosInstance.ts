@@ -15,25 +15,9 @@ const redirectToLogin = () => {
   }
 }
 
-const refreshTokens = async (refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> => {
-  const { data } = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/refresh`, {
-    refreshToken,
-  })
-
-  const accessToken = data.data.accessToken
-  const newRefreshToken = data.data.refreshToken
-
-  if (isValidValue(accessToken) && isValidValue(newRefreshToken)) {
-    setCookie("userData", accessToken, { maxAge: 3600 })
-    setCookie("userDataRefresh", newRefreshToken, { maxAge: 30 * 24 * 60 * 60 })
-    return { accessToken, refreshToken: newRefreshToken }
-  } else {
-    throw new Error("Invalid tokens received")
-  }
-}
 
 const getNewAccessToken = async (refreshToken: string): Promise<string> => {
-  const { data } = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/refresh-token`, {
+  const { data } = await axios.post(`${process.env.NEXT_PUBLIC_BASE_API_URL}/api/auth/refresh`, {
     refreshToken,
   })
 

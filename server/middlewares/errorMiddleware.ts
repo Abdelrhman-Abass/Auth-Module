@@ -18,7 +18,7 @@ const errorHandler = (
     // 1. Prisma Database Errors
     if (error instanceof PrismaClientKnownRequestError) {
       switch (error.code) {
-        case "P2002": // Unique constraint violation (e.g., email already exists)
+        case "P2002":
           const field = (error.meta?.['target'] as string[])?.[0] || "unknown";
           return res.status(409).json({
             success: false,
